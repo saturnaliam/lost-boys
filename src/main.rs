@@ -23,28 +23,27 @@ struct Project {
     files: Option<Vec<CreatedFile>>,
 }
 
+// formats the file content then writes it
 fn write_file(file_body: &String, file_name: &String) {
     let new_file_body = format!("{file_body}\n");
     fs::write(file_name, new_file_body).unwrap()
 }
 
 impl Directory {
+    // generates the folders and files
     fn generate(&mut self) {
         let self_directory_name = &self.directory_name;
         
         let result = fs::create_dir(self_directory_name);
 
         match result {
-            Ok(_) => {},
+            Ok(_) => {}, 
             Err(error) => match error.kind() {
                 ErrorKind::AlreadyExists => {},
-                _ => {
-                    panic!("There was an error writing to the file!");
-                }
+                _ => panic!("There was an error writing to the file!"),
             },
         };
         
-
         match &mut self.files {
             Some(files) => {
                 for subfile in files {
@@ -54,7 +53,6 @@ impl Directory {
                     write_file(&file_body, &new_file_name);
                 }
             },
-
             None => {},
         };
    
@@ -62,12 +60,10 @@ impl Directory {
             Some(subfolders) => {
                 for subdirectory in subfolders {
                     let directory_name = &mut subdirectory.directory_name;
-                    let new_directory_name = format!("{self_directory_name}/{directory_name}");
-                    subdirectory.directory_name = new_directory_name;
+                    subdirectory.directory_name = format!("{self_directory_name}/{directory_name}");
                     subdirectory.generate()
                 }
             },
-
             None => {}, 
         };
     }
@@ -81,7 +77,6 @@ impl Project {
                     write_file(&file.file_body, &file.file_name)
                 }
             }
-
             None => {},
         };
 
@@ -102,7 +97,6 @@ fn get_cli_path() -> String {
             let result = regex.replace_all(dir, "");
             String::from(result) 
         } 
-
         None => panic!("Error while reading the directory!"),
     }
 }
