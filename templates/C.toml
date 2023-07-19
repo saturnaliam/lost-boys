@@ -1,0 +1,22 @@
+[[directories]]
+directory_name = "src"
+
+[[directories.subfolders]]
+directory_name = "include" 
+
+[[directories.files]]
+file_name = "main.c"
+file_body = """
+#include <stdio.h>
+
+int
+main(void) {
+    printf("Hello, world!");
+}
+"""
+
+[[files]]
+file_name = ".gitignore"
+file_body = """
+/bin/
+"""
