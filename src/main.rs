@@ -112,15 +112,27 @@ fn get_template_contents(file_name: &String) -> Project {
 
     let full_file_path = format!("{exe_dir}/templates/{file_name}.toml");
    
-    println!("{}", full_file_path);
     let file_contents = fs::read_to_string(full_file_path).unwrap();
     
     toml::from_str(&file_contents).unwrap()
 }
 
 fn main() {
-    let mut project = get_template_contents(&String::from("C"));
+    let args: Vec<String> = env::args().collect();
 
-    project.generate();
+    if args.len() < 2 {
+        panic!("Not enough arguments!");
+    }
+
+    let command = &args[1];
+
+    if command == "create" {
+        if args.len() < 3 {
+            panic!("No language selection!");
+        }
+
+        let mut project = get_template_contents(&args[2]);
+        project.generate();
+    }
 }
 
