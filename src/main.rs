@@ -2,6 +2,7 @@ use std::fs;
 use std::io::ErrorKind;
 use serde::Deserialize;
 use std::env;
+use regex::Regex;
 
 #[derive(Deserialize)]
 struct CreatedFile {
@@ -94,18 +95,32 @@ fn get_cli_path() -> String {
     let exe_dir = env::current_exe().unwrap();
     let exe_dir = exe_dir.to_str();
 
+    let regex = Regex::new(r"(?m)/[a-zA-Z0-9-]+$").unwrap();
+  
     match exe_dir {
-        Some(dir) => return String::from(dir),
+        Some(dir) => {
+            let result = regex.replace_all(dir, "");
+            String::from(result) 
+        } 
+
         None => panic!("Error while reading the directory!"),
-    };
+    }
+}
+
+fn get_template_contents(file_name: &String) -> Project {
+    let exe_dir = get_cli_path();
+
+    let full_file_path = format!("{exe_dir}/templates/{file_name}.toml");
+   
+    println!("{}", full_file_path);
+    let file_contents = fs::read_to_string(full_file_path).unwrap();
+    
+    toml::from_str(&file_contents).unwrap()
 }
 
 fn main() {
+    let mut project = get_template_contents(&String::from("C"));
 
-
-    let contents = fs::read_to_string("templates/C.toml").unwrap();
-    let mut project: Project = toml::from_str(&contents).unwrap();
     project.generate();
-    let exe_dir = get_cli_path();
-    println!("{exe_dir}");
 }
+
